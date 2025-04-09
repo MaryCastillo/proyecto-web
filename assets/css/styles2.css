@@ -124,3 +124,39 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+
+/*CINTA RESUMEN*/
+.cinta-resumen {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #00bce4;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 12px;
+    max-width: 1000px;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    flex-wrap: wrap;
+}
+
+.resumen-item {
+    text-align: center;
+    margin: 10px 15px;
+    min-width: 140px;
+}
+
+.resumen-item h2 {
+    font-size: 2rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+.resumen-item p {
+    font-size: 0.95rem;
+    margin: 5px 0 0 0;
+}
+
+.oculto {
+    display: none;
+}

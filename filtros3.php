@@ -127,9 +127,134 @@
                 <button type="submit" class="btn-buscar">Buscar</button>
             </div>
         </form>
+        
+                <!--LISTADO DE FILTROS-->
+             <div class="resumen-filtros">
+                    <h3>Filtros Activos:</h3>
+                    <ul id="lista-filtros"></ul>
+            </div>
+            <!--CINTA RESUMEN-->
+            <div id="cinta-resumen" class="cinta-resumen oculto">
+                <div class="resumen-item">
+                    <h2 id="res-visitas-total">--</h2>
+                    <p>Visitas Totales</p>
+                </div>
+                <div class="resumen-item">
+                    <h2 id="res-nacionales">--</h2>
+                    <p>Visitas Nacionales</p>
+                </div>
+                <div class="resumen-item">
+                    <h2 id="res-extranjeros">--</h2>
+                    <p>Visitas Extranjeros</p>
+                </div>
+                <div class="resumen-item">
+                    <h2 id="res-lengua">--</h2>
+                    <p>Lengua más hablada</p>
+                </div>
+                <div class="resumen-item">
+                    <h2 id="res-motivo">--</h2>
+                    <p>Motivo</p>
+                </div>
+            </div>
+
+        <script>
+        //SCRIPT PARA FILTROS SELECCIONADOS
+        document.addEventListener("DOMContentLoaded", () => {
+            const filtros = document.querySelectorAll("input, select");
+            const listaFiltros = document.getElementById("lista-filtros");
+            const formulario = document.querySelector("form");
+
+            const nombresCampos = {
+                fecha_inicio: "Fecha Inicio",
+                fecha_fin: "Fecha Fin",
+                nacionalidad: "Nacionalidad",
+                pais: "País de Residencia",
+                frec_visita: "Frecuencia",
+                escolaridad: "Estudios",
+                motivos: "Motivo",
+                lenguaje: "Lengua"
+            };
+
+            filtros.forEach(filtro => {
+                filtro.addEventListener("change", () => {
+                    actualizarResumen();
+                });
+            });
+
+            formulario.addEventListener("reset", () => {
+                // Espera un poco a que se limpie el formulario visualmente
+                setTimeout(() => {
+                    listaFiltros.innerHTML = "";
+                }, 50);
+            });
+
+            function actualizarResumen() {
+                listaFiltros.innerHTML = "";
+
+                filtros.forEach(filtro => {
+                    let valor = filtro.value;
+                    if (valor && nombresCampos[filtro.name || filtro.id]) {
+                        const texto = filtro.options
+                            ? filtro.options[filtro.selectedIndex].text
+                            : valor;
+
+                        const li = document.createElement("li");
+                        li.textContent = `${nombresCampos[filtro.name || filtro.id]}: ${texto}`;
+                        listaFiltros.appendChild(li);
+                    }
+                });
+            }
+        });
 
 
+        //SCRIPT PARA OBTENER Y MOSTRAR RESUMEN
+        document.addEventListener("DOMContentLoaded", () => {
+            const filtros = document.querySelectorAll("input, select");
+            const btnBuscar = document.querySelector(".btn-buscar");
+            const cintaResumen = document.getElementById("cinta-resumen");
 
+            // Elementos resumen
+            const elTotal = document.getElementById("res-visitas-total");
+            const elNac = document.getElementById("res-nacionales");
+            const elExt = document.getElementById("res-extranjeros");
+            const elLengua = document.getElementById("res-lengua");
+            const elMotivo = document.getElementById("res-motivo");
+
+            btnBuscar.addEventListener("click", (e) => {
+                e.preventDefault();
+
+                let filtrosSeleccionados = {};
+                filtros.forEach(filtro => {
+                    let key = filtro.name || filtro.id;
+                    if (filtro.value) {
+                        filtrosSeleccionados[key] = filtro.value;
+                    }
+                });
+
+                fetch("sql.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(filtrosSeleccionados)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    elTotal.textContent = data.total ?? "--";
+                    elNac.textContent = data.nacionales ?? "--";
+                    elExt.textContent = data.extranjeros ?? "--";
+                    elLengua.textContent = data.lengua ?? "--";
+                    elMotivo.textContent = data.motivo ?? "--";
+
+                    cintaResumen.classList.remove("oculto");
+                })
+                .catch(err => {
+                    console.error("Error al obtener resumen:", err);
+                    cintaResumen.classList.add("oculto");
+                });
+            });
+        });
+        </script>
 
     </body>
 </html>
