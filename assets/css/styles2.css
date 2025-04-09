@@ -1,6 +1,9 @@
 .titulo-principal {
-    text-align: center;
+    /*text-align: center;
+    padding: 20px;
     margin-bottom: 30px;
+    */
+    overflow-x: scroll;
 }
 
 .titulo-principal h1 {
@@ -106,6 +109,10 @@ hr {
 }
 
 /* Estilos para la tabla de resultados (si la necesitas) */
+.tabla-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
 table {
     width: 100%;
     border-collapse: collapse;

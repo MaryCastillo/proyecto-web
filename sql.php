@@ -38,12 +38,20 @@ $condiciones = count($where) > 0 ? "WHERE " . implode(" AND ", $where) : "";
 // --- Resumen ---
 $total = $conn->query("SELECT COUNT(*) as total FROM visita v $condiciones")->fetch_assoc()["total"] ?? 0;
 
-$sqlNac = "SELECT COUNT(*) as total 
+/*$sqlNac = "SELECT COUNT(*) as total 
            FROM visita v 
            JOIN pais p ON v.IDNacionalidad = p.ID 
            $condiciones " . (count($where) > 0 ? " AND " : "WHERE ") . " p.Nombre = 'México'";
 $nacionales = $conn->query($sqlNac)->fetch_assoc()["total"] ?? 0;
+*/
+$condNac = $where;
+$condNac[] = "p.Nombre = 'México'";
+$condStr = "WHERE " . implode(" AND ", $condNac);
 
+$sqlNac = "SELECT COUNT(*) as total 
+           FROM visita v 
+           JOIN pais p ON v.IDNacionalidad = p.ID 
+           $condStr";
 $extranjeros = $total - $nacionales;
 
 $sqlLengua = "SELECT l.Nombre, COUNT(*) as total
@@ -103,12 +111,12 @@ while ($fila = $resultado->fetch_assoc()) {
 }
 
 // --- Enviar todo en un solo JSON ---
-echo json_encode([
-    "total" => intval($total),
-    "nacionales" => intval($nacionales),
-    "extranjeros" => intval($extranjeros),
-    "lengua" => $lengua,
-    "motivo" => $motivo,
-    "resultados" => $datos_finales
-]);
+    echo json_encode([
+        "total" => $total,
+        "nacionales" => $nacionales,
+        "extranjeros" => $extranjeros,
+        "lengua" => $lengua,
+        "motivo" => $motivo,
+        "resultados" => $resultados
+    ]);
 ?>

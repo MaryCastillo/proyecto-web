@@ -19,7 +19,7 @@
                 <div class="filtros-group">
                     <div class="filtro-item">
                     <label for="fecha_inicio">Fecha Inicio:</label>
-                    <input type="date" id="fecha_inicio">
+                    <input type="date" id="fecha_inicio" name="fecha_inicio">
                     </div>
 
                     <div class="filtro-item">
@@ -56,7 +56,7 @@
                 <div class="filtros-group">
                     <div class="filtro-item">
                     <label for="fecha_fin">Fecha Fin:</label>
-                    <input type="date" id="fecha_fin">
+                    <input type="date" id="fecha_fin" name="fecha_fin">
 
                     </div>
 
@@ -156,30 +156,32 @@
                     <p>Motivo</p>
                 </div>
             </div>
-            <table id="mi-tabla">
-                <thead>
-                    <tr>
-                    <th>Sexo</th>
-                    <th>Edad</th>
-                    <th>País de residencia</th>
-                    <th>Nacionalidad</th>
-                    <th>Estudios</th>
-                    <th>Grado</th>
-                    <th>1ra Lengua</th>
-                    <th>2da Lengua</th>
-                    <th>Frecuencia</th>
-                    <th>Motivo de visita</th>
-                    <th>Medio de Transporte</th>
-                    <th>Tiempo de Traslado</th>
-                    <th>Tipo de Acompañante</th>
-                    <th>Tamaño del Grupo</th>
-                    <th>Menores de 12 en el Grupo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Aquí se insertarán las filas dinámicamente -->
-                </tbody>
+            <div class="tabla-responsive">
+                <table id="mi-tabla">
+                    <thead>
+                        <tr>
+                        <th>Sexo</th>
+                        <th>Edad</th>
+                        <th>País de residencia</th>
+                        <th>Nacionalidad</th>
+                        <th>Estudios</th>
+                        <th>Grado</th>
+                        <th>1ra Lengua</th>
+                        <th>2da Lengua</th>
+                        <th>Frecuencia</th>
+                        <th>Motivo de visita</th>
+                        <th>Medio de Transporte</th>
+                        <th>Tiempo de Traslado</th>
+                        <th>Tipo de Acompañante</th>
+                        <th>Tamaño del Grupo</th>
+                        <th>Menores de 12 en el Grupo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se insertarán las filas dinámicamente -->
+                    </tbody>
                 </table>
+            </div>
 
 
         <script>
