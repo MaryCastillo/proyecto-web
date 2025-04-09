@@ -231,7 +231,7 @@
             }
         });
 
-
+        /*
         //SCRIPT PARA OBTENER Y MOSTRAR RESUMEN
         document.addEventListener("DOMContentLoaded", () => {
             const filtros = document.querySelectorAll("input, select");
@@ -304,7 +304,6 @@
                 e.preventDefault(); // Evita recarga del form
 
 
-                document.querySelector("#mi-tabla tbody").insertAdjacentHTML("beforeend", filaHTML);
 
             const filtros = {
                 fecha_inicio: document.getElementById("fecha_inicio").value,
@@ -326,6 +325,74 @@
             const data = await res.json();
             llenarTabla(data.resultados); // <- Asumiendo que el backend regresa { resultados: [...] }
             });
+            */
+
+            // SCRIPT UNIFICADO: resumen + tabla
+            document.addEventListener("DOMContentLoaded", () => {
+                const filtros = document.querySelectorAll("input, select");
+                const btnBuscar = document.querySelector(".btn-buscar");
+                const cintaResumen = document.getElementById("cinta-resumen");
+
+                // Elementos resumen
+                const elTotal = document.getElementById("res-visitas-total");
+                const elNac = document.getElementById("res-nacionales");
+                const elExt = document.getElementById("res-extranjeros");
+                const elLengua = document.getElementById("res-lengua");
+                const elMotivo = document.getElementById("res-motivo");
+
+                // Tabla
+                const columnas = ["Sexo", "Edad", "PaisResidencia", "Nacionalidad", "Estudios", "Grado", "Lengua1", "Lengua2", "Frecuencia", "Motivo", "Transporte", "Tiempo", "TipoAcomp", "TamGrupo", "MenoresGrupo"];
+                const cuerpoTabla = document.querySelector("#mi-tabla tbody");
+
+                btnBuscar.addEventListener("click", async (e) => {
+                    e.preventDefault();
+
+                    let filtrosSeleccionados = {};
+                    filtros.forEach(filtro => {
+                        let key = filtro.name || filtro.id;
+                        if (filtro.value) {
+                            filtrosSeleccionados[key] = filtro.value;
+                        }
+                    });
+
+                    try {
+                        const res = await fetch("sql.php", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(filtrosSeleccionados)
+                        });
+
+                        const data = await res.json();
+
+                        // Actualiza resumen
+                        elTotal.textContent = data.total ?? "--";
+                        elNac.textContent = data.nacionales ?? "--";
+                        elExt.textContent = data.extranjeros ?? "--";
+                        elLengua.textContent = data.lengua ?? "--";
+                        elMotivo.textContent = data.motivo ?? "--";
+
+                        cintaResumen.classList.remove("oculto");
+
+                        // Llena tabla
+                        cuerpoTabla.innerHTML = "";
+                        data.resultados.forEach(fila => {
+                            const tr = document.createElement("tr");
+                            columnas.forEach(col => {
+                                const td = document.createElement("td");
+                                td.textContent = fila[col] ?? "";
+                                tr.appendChild(td);
+                            });
+                            cuerpoTabla.appendChild(tr);
+                        });
+
+                    } catch (err) {
+                        console.error("Error al obtener datos:", err);
+                        cintaResumen.classList.add("oculto");
+                    }
+                });
+            });
+
+
 
         </script>
 

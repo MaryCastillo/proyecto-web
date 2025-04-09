@@ -2,10 +2,10 @@
 include "conexion.php";
 header("Content-Type: application/json");
 
-// Recibir los filtros como JSON
+// Recibir los filtros una sola vez
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Armar el WHERE dinámico
+// Armar el WHERE dinámico (para ambos usos)
 $where = [];
 
 if (!empty($data["fecha_inicio"])) {
@@ -35,21 +35,17 @@ if (!empty($data["motivos"])) {
 
 $condiciones = count($where) > 0 ? "WHERE " . implode(" AND ", $where) : "";
 
-// Total de visitas
-$sqlTotal = "SELECT COUNT(*) as total FROM visita v $condiciones";
-$total = $conn->query($sqlTotal)->fetch_assoc()["total"];
+// --- Resumen ---
+$total = $conn->query("SELECT COUNT(*) as total FROM visita v $condiciones")->fetch_assoc()["total"] ?? 0;
 
-// Nacionales (México = ID 117, cambia si es distinto en tu BD)
 $sqlNac = "SELECT COUNT(*) as total 
            FROM visita v 
            JOIN pais p ON v.IDNacionalidad = p.ID 
            $condiciones " . (count($where) > 0 ? " AND " : "WHERE ") . " p.Nombre = 'México'";
 $nacionales = $conn->query($sqlNac)->fetch_assoc()["total"] ?? 0;
 
-// Extranjeros = total - nacionales
 $extranjeros = $total - $nacionales;
 
-// Lengua más hablada
 $sqlLengua = "SELECT l.Nombre, COUNT(*) as total
               FROM visita v
               JOIN lenguaje l ON v.IDLenguaje = l.ID
@@ -60,7 +56,6 @@ $sqlLengua = "SELECT l.Nombre, COUNT(*) as total
 $resLengua = $conn->query($sqlLengua)->fetch_assoc();
 $lengua = $resLengua["Nombre"] ?? "Sin datos";
 
-// Motivo más frecuente
 $sqlMotivo = "SELECT c.Medio, COUNT(*) as total
               FROM visita v
               JOIN comunicacion c ON v.IDMedio = c.ID
@@ -71,48 +66,49 @@ $sqlMotivo = "SELECT c.Medio, COUNT(*) as total
 $resMotivo = $conn->query($sqlMotivo)->fetch_assoc();
 $motivo = $resMotivo["Medio"] ?? "Sin datos";
 
-// Devolver el JSON
-echo json_encode([
-    "total" => intval($total),
-    "nacionales" => intval($nacionales),
-    "extranjeros" => intval($extranjeros),
-    "lengua" => $lengua,
-    "motivo" => $motivo
-]);
+// --- Resultados de tabla ---
+$sqlTabla = "
+    SELECT 
+        s.Nombre AS Sexo,
+        v.Edad,
+        p.Nombre AS PaisResidencia,
+        pn.Gentilicio AS Nacionalidad,
+        e.Nivel AS Estudios,
+        e.Grado,
+        l1.Nombre AS Lengua1,
+        l2.Nombre AS Lengua2,
+        f.Rango AS Frecuencia,
+        c.Medio AS Motivo,
+        v.Transporte,
+        v.Tiempo,
+        v.TipoAcomp,
+        v.TamGrupo,
+        v.MenoresGrupo
+    FROM visita v
+    LEFT JOIN sexo s ON v.IDSexo = s.ID
+    LEFT JOIN pais p ON v.IDPaisResidencia = p.ID
+    LEFT JOIN pais pn ON v.IDNacionalidad = pn.ID
+    LEFT JOIN escolaridad e ON v.IDEscolaridad = e.ID
+    LEFT JOIN lenguaje l1 ON v.IDLenguaje = l1.ID
+    LEFT JOIN lenguaje l2 ON v.IDLenguaje2 = l2.ID
+    LEFT JOIN frec_visita f ON v.IDFrecVisita = f.ID
+    LEFT JOIN comunicacion c ON v.IDMedio = c.ID
+    $condiciones
+";
 
-//TABLA DE RESULTADOS
-header('Content-Type: application/json');
-
-$datos = json_decode(file_get_contents("php://input"), true);
-
-$condiciones = [];
-
-if (!empty($datos["fecha_inicio"])) {
-    $condiciones[] = "Fecha >= '" . $conn->real_escape_string($datos["fecha_inicio"]) . "'";
-}
-if (!empty($datos["fecha_fin"])) {
-    $condiciones[] = "Fecha <= '" . $conn->real_escape_string($datos["fecha_fin"]) . "'";
-}
-if (!empty($datos["nacionalidad"])) {
-    $condiciones[] = "Nacionalidad = " . intval($datos["nacionalidad"]);
-}
-// Repite para cada filtro...
-
-$sql = "SELECT Sexo, Edad, PaisResidencia, Nacionalidad, Estudios, Grado, Lengua1, Lengua2, Frecuencia, Motivo, Transporte, Tiempo, TipoAcomp, TamGrupo, MenoresGrupo FROM visitas";
-
-if (!empty($condiciones)) {
-    $sql .= " WHERE " . implode(" AND ", $condiciones);
-}
-
-$resultado = $conn->query($sql);
-
+$resultado = $conn->query($sqlTabla);
 $datos_finales = [];
 while ($fila = $resultado->fetch_assoc()) {
     $datos_finales[] = $fila;
 }
 
-echo json_encode(["resultados" => $datos_finales]);
-
-
-
-
+// --- Enviar todo en un solo JSON ---
+echo json_encode([
+    "total" => intval($total),
+    "nacionales" => intval($nacionales),
+    "extranjeros" => intval($extranjeros),
+    "lengua" => $lengua,
+    "motivo" => $motivo,
+    "resultados" => $datos_finales
+]);
+?>

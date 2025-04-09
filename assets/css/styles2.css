@@ -160,3 +160,24 @@ th {
 .oculto {
     display: none;
 }
+
+#mi-tabla {
+    width: 95%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: white;
+    color: black;
+    font-family: sans-serif;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+  
+  #mi-tabla th, #mi-tabla td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  #mi-tabla th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
