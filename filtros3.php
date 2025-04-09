@@ -303,6 +303,9 @@
             document.querySelector(".btn-buscar").addEventListener("click", async function (e) {
                 e.preventDefault(); // Evita recarga del form
 
+
+                document.querySelector("#mi-tabla tbody").insertAdjacentHTML("beforeend", filaHTML);
+
             const filtros = {
                 fecha_inicio: document.getElementById("fecha_inicio").value,
                 fecha_fin: document.getElementById("fecha_fin").value,
