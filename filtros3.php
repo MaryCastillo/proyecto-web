@@ -156,6 +156,31 @@
                     <p>Motivo</p>
                 </div>
             </div>
+            <table id="mi-tabla">
+                <thead>
+                    <tr>
+                    <th>Sexo</th>
+                    <th>Edad</th>
+                    <th>País de residencia</th>
+                    <th>Nacionalidad</th>
+                    <th>Estudios</th>
+                    <th>Grado</th>
+                    <th>1ra Lengua</th>
+                    <th>2da Lengua</th>
+                    <th>Frecuencia</th>
+                    <th>Motivo de visita</th>
+                    <th>Medio de Transporte</th>
+                    <th>Tiempo de Traslado</th>
+                    <th>Tipo de Acompañante</th>
+                    <th>Tamaño del Grupo</th>
+                    <th>Menores de 12 en el Grupo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se insertarán las filas dinámicamente -->
+                </tbody>
+                </table>
+
 
         <script>
         //SCRIPT PARA FILTROS SELECCIONADOS
@@ -254,6 +279,51 @@
                 });
             });
         });
+
+
+    
+        //TABLA DE RESULTADOS
+        const columnas = ["Sexo", "Edad", "PaisResidencia", "Nacionalidad", "Estudios", "Grado", "Lengua1", "Lengua2", "Frecuencia", "Motivo", "Transporte", "Tiempo", "TipoAcomp", "TamGrupo", "MenoresGrupo"];
+
+            function llenarTabla(datos) {
+                const cuerpo = document.querySelector("#mi-tabla tbody");
+                cuerpo.innerHTML = ""; // Limpiar tabla
+
+                datos.forEach(fila => {
+                    const tr = document.createElement("tr");
+                    columnas.forEach(col => {
+                        const td = document.createElement("td");
+                        td.textContent = fila[col] ?? ""; // Evita nulls
+                        tr.appendChild(td);
+                    });
+                    cuerpo.appendChild(tr);
+                });
+            }
+
+            document.querySelector(".btn-buscar").addEventListener("click", async function (e) {
+                e.preventDefault(); // Evita recarga del form
+
+            const filtros = {
+                fecha_inicio: document.getElementById("fecha_inicio").value,
+                fecha_fin: document.getElementById("fecha_fin").value,
+                nacionalidad: document.querySelector("[name='nacionalidad']").value,
+                pais: document.querySelector("[name='pais']").value,
+                frec_visita: document.querySelector("[name='frec_visita']").value,
+                escolaridad: document.querySelector("[name='escolaridad']").value,
+                motivos: document.querySelector("[name='motivos']").value,
+                lenguaje: document.querySelector("[name='lenguaje']").value
+            };
+
+            const res = await fetch("sql.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(filtros)
+            });
+
+            const data = await res.json();
+            llenarTabla(data.resultados); // <- Asumiendo que el backend regresa { resultados: [...] }
+            });
+
         </script>
 
     </body>
