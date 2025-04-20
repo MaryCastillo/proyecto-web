@@ -1,6 +1,9 @@
 .titulo-principal {
-    text-align: center;
+    /*text-align: center;
+    padding: 20px;
     margin-bottom: 30px;
+    */
+    overflow-x: scroll;
 }
 
 .titulo-principal h1 {
@@ -106,6 +109,10 @@ hr {
 }
 
 /* Estilos para la tabla de resultados (si la necesitas) */
+.tabla-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
 table {
     width: 100%;
     border-collapse: collapse;
@@ -124,3 +131,60 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+
+/*CINTA RESUMEN*/
+.cinta-resumen {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #00bce4;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 12px;
+    max-width: 1000px;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    flex-wrap: wrap;
+}
+
+.resumen-item {
+    text-align: center;
+    margin: 10px 15px;
+    min-width: 140px;
+}
+
+.resumen-item h2 {
+    font-size: 2rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+.resumen-item p {
+    font-size: 0.95rem;
+    margin: 5px 0 0 0;
+}
+
+.oculto {
+    display: none;
+}
+
+#mi-tabla {
+    width: 95%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: white;
+    color: black;
+    font-family: sans-serif;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+  
+  #mi-tabla th, #mi-tabla td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  #mi-tabla th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
